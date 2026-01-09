@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Company, SignatureData } from './types';
-import { DEFAULT_SIGNATURE, COLORS } from './constants';
+import { DEFAULT_SIGNATURE, COLORS, LEGAL_DISCLAIMER_ES, LEGAL_DISCLAIMER_EN } from './constants';
 import SignatureForm from './components/SignatureForm';
 import SignaturePreview from './components/SignaturePreview';
 
@@ -91,8 +91,42 @@ const App: React.FC = () => {
                 <li>Completa el formulario con tus datos reales.</li>
                 <li>Sube una foto profesional con fondo neutro si es posible.</li>
                 <li>Descarga la firma en formato PNG e insértala en tu correo.</li>
+                <li className="font-bold">Añade el texto legal debajo de la imagen descargada.</li>
               </ul>
             </div>
+
+            <div className="mt-8 bg-slate-50 p-6 rounded-2xl border border-slate-200">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Texto Legal (LOPD)
+                </h3>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${LEGAL_DISCLAIMER_ES}\n\n${LEGAL_DISCLAIMER_EN}`);
+                    alert('Texto legal copiado al portapapeles');
+                  }}
+                  style={{ color: brandColor, borderColor: `${brandColor}40` }}
+                  className="px-3 py-1.5 text-xs font-bold border rounded-lg hover:bg-white transition-all flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                  </svg>
+                  Copiar Todo
+                </button>
+              </div>
+              <div className="space-y-4 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                <div className="text-[11px] leading-relaxed text-slate-500 italic border-l-2 border-slate-200 pl-4">
+                  {LEGAL_DISCLAIMER_ES}
+                </div>
+                <div className="text-[11px] leading-relaxed text-slate-400 italic border-l-2 border-slate-100 pl-4">
+                  {LEGAL_DISCLAIMER_EN}
+                </div>
+              </div>
+            </div>
+
           </section>
         </div>
       </main>
