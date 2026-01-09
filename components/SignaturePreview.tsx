@@ -10,6 +10,7 @@ interface SignaturePreviewProps {
 const SignaturePreview: React.FC<SignaturePreviewProps> = ({ data }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isRendering, setIsRendering] = useState(false);
+  const drawCountRef = useRef(0);
 
   const isSamoo = data.company === Company.SAMOO;
   const brandColor = isSamoo ? COLORS.samoo.primary : COLORS.pentec.primary;
@@ -20,7 +21,16 @@ const SignaturePreview: React.FC<SignaturePreviewProps> = ({ data }) => {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
 
+    // Incrementar contador de renderizado para detectar llamadas obsoletas
+    const drawId = ++drawCountRef.current;
     setIsRendering(true);
+
+    // Handle high-DPI displays
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = CANVAS_WIDTH * dpr;
+    canvas.height = CANVAS_HEIGHT * dpr;
+    ctx.scale(dpr, dpr);
+
     const colors = isSamoo ? COLORS.samoo : COLORS.pentec;
     const currentBgPath = isSamoo ? BACKGROUNDS.samoo : BACKGROUNDS.pentec;
 
@@ -32,6 +42,9 @@ const SignaturePreview: React.FC<SignaturePreviewProps> = ({ data }) => {
       bgImg.onload = () => resolve(true);
       bgImg.onerror = () => resolve(false);
     });
+
+    // Si ha empezado otro renderizado, abortamos este
+    if (drawId !== drawCountRef.current) return;
 
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
@@ -48,10 +61,9 @@ const SignaturePreview: React.FC<SignaturePreviewProps> = ({ data }) => {
     const photoY = (contentYCenter + 35) - (photoSize / 2);
     const textStartX = 300;
 
-    // Radio para círculo perfecto
-    const circularRadius = photoSize / 2;
-    const centerX = photoX + photoSize / 2;
-    const centerY = photoY + photoSize / 2;
+    const centerX = Math.floor(photoX + photoSize / 2);
+    const centerY = Math.floor(photoY + photoSize / 2);
+    const radius = photoSize / 2;
 
     if (data.photoUrl) {
       const userImg = new Image();
@@ -63,56 +75,54 @@ const SignaturePreview: React.FC<SignaturePreviewProps> = ({ data }) => {
         userImg.onerror = () => resolve(false);
       });
 
+      // Si ha empezado otro renderizado, abortamos este
+      if (drawId !== drawCountRef.current) return;
+
       if (userImgLoaded) {
         ctx.save();
-        
-        // 1. Recorte circular de la foto
         ctx.beginPath();
-        ctx.arc(centerX, centerY, circularRadius, 0, Math.PI * 2);
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.closePath();
         ctx.clip();
         
         const aspect = userImg.width / userImg.height;
         let drawW, drawH, drawX, drawY;
+        
         if (aspect > 1) {
           drawH = photoSize;
           drawW = photoSize * aspect;
-          drawX = centerX - drawW / 2;
-          drawY = centerY - drawH / 2;
         } else {
           drawW = photoSize;
           drawH = photoSize / aspect;
-          drawX = centerX - drawW / 2;
-          drawY = centerY - drawH / 2;
         }
+        
+        drawX = centerX - drawW / 2;
+        drawY = centerY - drawH / 2;
+
         ctx.drawImage(userImg, drawX, drawY, drawW, drawH);
         ctx.restore();
 
-        // 2. Dibujar el borde de color de marca DIRECTAMENTE sobre la foto
         ctx.save();
         ctx.strokeStyle = colors.accent;
-        ctx.lineWidth = 6; 
+        ctx.lineWidth = 6;
         ctx.beginPath();
-        ctx.arc(centerX, centerY, circularRadius, 0, Math.PI * 2);
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
         ctx.stroke();
         ctx.restore();
       }
     }
 
-    // 2. Dibujar Textos
     ctx.textAlign = 'left';
     const secondaryTextColor = isSamoo ? 'rgba(255, 255, 255, 0.75)' : 'rgba(85, 85, 85, 0.8)';
 
-    // Nombre: Medium 500
     ctx.fillStyle = colors.textMain;
     ctx.font = '500 36px Poppins';
     ctx.fillText(data.name, textStartX, 135);
 
-    // Puesto: Medium 500 (antes 700) - Se reduce el grosor como solicitado
     ctx.font = '500 24px Poppins';
     ctx.fillStyle = colors.textMain;
     ctx.fillText(data.jobTitle, textStartX, 172);
 
-    // Área: Regular 400
     ctx.font = '400 17px Poppins';
     ctx.fillStyle = secondaryTextColor;
     ctx.fillText(data.areaText, textStartX, 202);

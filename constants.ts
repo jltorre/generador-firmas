@@ -30,7 +30,7 @@ export const DEFAULT_SIGNATURE: SignatureData = {
   photoUrl: '/avatar.png',
   name: 'Jane Doe',
   jobTitle: 'Responsable de Proyectos E-learning',
-  phone: '+34 963 93 74 33',
+  phone: 'Telf: 963 93 74 33',
   email: 'j.doe@pentec.es',
   website: 'www.pentec.es',
   areaText: 'Área de Innovación Digital'

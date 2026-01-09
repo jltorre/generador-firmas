@@ -71,7 +71,7 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onChange }) => {
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
           />
           <div className="flex items-center gap-6 p-4">
-            <div className="relative">
+            <div className="relative flex-shrink-0">
               <img 
                 src={data.photoUrl} 
                 alt="Preview" 
