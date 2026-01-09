@@ -7,6 +7,13 @@ import SignaturePreview from './components/SignaturePreview';
 
 const App: React.FC = () => {
   const [signatureData, setSignatureData] = useState<SignatureData>(DEFAULT_SIGNATURE);
+  const [showToast, setShowToast] = useState(false);
+
+  const copyLegalText = () => {
+    navigator.clipboard.writeText(`${LEGAL_DISCLAIMER_ES}\n\n${LEGAL_DISCLAIMER_EN}`);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
   const isSamoo = signatureData.company === Company.SAMOO;
   const brandColor = isSamoo ? COLORS.samoo.primary : COLORS.pentec.primary;
@@ -104,10 +111,7 @@ const App: React.FC = () => {
                   Texto Legal (LOPD)
                 </h3>
                 <button 
-                  onClick={() => {
-                    navigator.clipboard.writeText(`${LEGAL_DISCLAIMER_ES}\n\n${LEGAL_DISCLAIMER_EN}`);
-                    alert('Texto legal copiado al portapapeles');
-                  }}
+                  onClick={copyLegalText}
                   style={{ color: brandColor, borderColor: `${brandColor}40` }}
                   className="px-3 py-1.5 text-xs font-bold border rounded-lg hover:bg-white transition-all flex items-center gap-2"
                 >
@@ -130,6 +134,19 @@ const App: React.FC = () => {
           </section>
         </div>
       </main>
+
+      {/* Toast Notificación */}
+      <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 transform ${showToast ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0 pointer-events-none'}`}>
+        <div className="bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-800">
+          <div style={{ backgroundColor: brandColor }} className="w-6 h-6 rounded-full flex items-center justify-center">
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <span className="text-sm font-bold tracking-tight">Texto legal copiado al portapapeles</span>
+        </div>
+      </div>
+
 
       <footer className="mt-20 pt-8 border-t border-slate-200 text-center text-slate-500 text-sm">
         <p>&copy; {new Date().getFullYear()} {signatureData.company}. Todos los derechos reservados.</p>
