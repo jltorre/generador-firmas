@@ -25,15 +25,26 @@ export const COLORS = {
   }
 };
 
-export const DEFAULT_SIGNATURE: SignatureData = {
+export const DEFAULT_PENTEC: SignatureData = {
   company: Company.PENTEC,
-  photoUrl: '/avatar.png',
-  name: 'Jane Doe',
-  jobTitle: 'Responsable de Proyectos E-learning',
+  photoUrl: '/avatar_pentec.png',
+  name: 'John Smith',
+  jobTitle: 'Tu puesto en Pentec',
   phone: 'Telf: 963 93 74 33',
-  email: 'j.doe@pentec.es',
+  email: 'j.smith@pentec.es',
   website: 'www.pentec.es',
-  areaText: 'Área de Innovación Digital'
+  areaText: 'Área dentro de Pentec'
+};
+
+export const DEFAULT_SAMOO: SignatureData = {
+  company: Company.SAMOO,
+  photoUrl: '/avatar_samoo.png',
+  name: 'Jane Doe',
+  jobTitle: 'Tu puesto en Samoo',
+  phone: 'Telf: 963 93 74 33',
+  email: 'j.doe@samoo.es',
+  website: 'www.samoo.es',
+  areaText: 'Área dentro de Samoo'
 };
 
 export const LEGAL_DISCLAIMER_ES = `Este correo electrónico y sus archivos adjuntos son confidenciales y están dirigidos exclusivamente a su destinatario. Si usted ha recibido este mensaje por error, le rogamos que lo elimine inmediatamente y lo comunique al remitente. Queda prohibida la difusión, copia o utilización de la información contenida en este correo por cualquier persona distinta a su destinatario. La divulgación no autorizada de su contenido puede ser sancionada conforme a la normativa vigente, en particular la Ley Orgánica 3/2018, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGP). No se autoriza el uso de las direcciones del remitente o del destinatario con fines comerciales ni su incorporación a ficheros automatizados sin el consentimiento expreso de los interesados.`;

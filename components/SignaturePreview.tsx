@@ -116,35 +116,101 @@ const SignaturePreview: React.FC<SignaturePreviewProps> = ({ data }) => {
     ctx.textAlign = 'left';
     const secondaryTextColor = isSamoo ? 'rgba(255, 255, 255, 0.75)' : 'rgba(85, 85, 85, 0.8)';
 
+    // 1. Definir presencia de campos opcionales
+    const hasJob = !!data.jobTitle;
+    const hasArea = !!data.areaText;
+
+    // 2. Definir gaps y calcular posiciones relativas (baselines)
+    const gapNameJob = 37;
+    const gapJobArea = 30;
+    const gapAreaContact = 28;
+    const contactLineHeight = 21;
+
+    let bName = 0;
+    let bJob = 0;
+    let bArea = 0;
+    let bContact1 = 0;
+
+    let currentRelY = 0;
+    bName = currentRelY;
+
+    if (hasJob) {
+      currentRelY += gapNameJob;
+      bJob = currentRelY;
+    }
+
+    if (hasArea) {
+      currentRelY += (hasJob ? gapJobArea : gapNameJob);
+      bArea = currentRelY;
+    }
+
+    // 4. Determinar campos de contacto presentes
+    const contactFields = [
+      { key: 'phone', value: data.phone },
+      { key: 'email', value: data.email },
+      { key: 'website', value: data.website }
+    ].filter(f => !!f.value);
+
+    // 5. Calcular posiciones de contacto y altura total
+    // El bloque de contacto siempre empieza después del bloque superior (John Smith / Puesto / Area)
+    // Añadimos un margen de seguridad (gapAreaContact)
+    const safetyGap = hasArea ? gapAreaContact : (hasJob ? gapAreaContact + 5 : gapAreaContact + 15);
+    let currentContactRelY = currentRelY + safetyGap;
+    
+    const contactPositions: number[] = [];
+    contactFields.forEach((_, index) => {
+      contactPositions.push(currentContactRelY + (index * contactLineHeight));
+    });
+
+    const bLastContact = contactPositions.length > 0 ? contactPositions[contactPositions.length - 1] : currentRelY;
+
+    // 6. Calcular altura total para centrado
+    const baselineRange = bLastContact - bName;
+    const topPadding = 28; 
+    const bottomPadding = 5; 
+    const totalBlockHeight = baselineRange + topPadding + bottomPadding;
+
+    const CONTENT_CENTER_Y = 195; 
+    const startY = (CONTENT_CENTER_Y - (totalBlockHeight / 2)) + topPadding;
+
+    // 7. Dibujar Bloques Principales
     ctx.fillStyle = colors.textMain;
     ctx.font = '500 36px Poppins';
-    ctx.fillText(data.name, textStartX, 135);
+    ctx.fillText(data.name, textStartX, startY + bName);
 
-    ctx.font = '500 24px Poppins';
-    ctx.fillStyle = colors.textMain;
-    ctx.fillText(data.jobTitle, textStartX, 172);
+    if (hasJob) {
+      ctx.font = '500 24px Poppins';
+      ctx.fillText(data.jobTitle, textStartX, startY + bJob);
+    }
 
-    ctx.font = '400 17px Poppins';
-    ctx.fillStyle = secondaryTextColor;
-    ctx.fillText(data.areaText, textStartX, 202);
+    if (hasArea) {
+      ctx.font = '400 17px Poppins';
+      ctx.fillStyle = secondaryTextColor;
+      ctx.fillText(data.areaText, textStartX, startY + bArea);
+    }
 
-    const contactBlockY = 230;
-    const lineHeight = 21;
-    
-    ctx.strokeStyle = secondaryTextColor;
-    ctx.lineWidth = 1.2;
-    ctx.beginPath();
-    ctx.moveTo(textStartX, contactBlockY - 14);
-    ctx.lineTo(textStartX, contactBlockY + (lineHeight * 2) + 4);
-    ctx.stroke();
+    // 8. Dibujar Contacto y Línea Vertical
+    if (contactFields.length > 0) {
+      const firstY = startY + contactPositions[0];
+      const lastY = startY + contactPositions[contactPositions.length - 1];
+      
+      ctx.strokeStyle = secondaryTextColor;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      // Pequeño ajuste para que no pegue demasiado arriba si solo hay una línea
+      const lineTopOffset = contactFields.length === 1 ? 10 : 14;
+      ctx.moveTo(textStartX, firstY - lineTopOffset);
+      ctx.lineTo(textStartX, lastY + 4);
+      ctx.stroke();
 
-    ctx.font = '400 15px Poppins';
-    ctx.fillStyle = secondaryTextColor;
-    
-    const indent = 16; 
-    ctx.fillText(data.phone, textStartX + indent, contactBlockY);
-    ctx.fillText(data.email, textStartX + indent, contactBlockY + lineHeight);
-    ctx.fillText(data.website, textStartX + indent, contactBlockY + (lineHeight * 2));
+      ctx.font = '400 15px Poppins';
+      ctx.fillStyle = secondaryTextColor;
+      const indent = 16; 
+      
+      contactFields.forEach((field, index) => {
+        ctx.fillText(field.value, textStartX + indent, startY + contactPositions[index]);
+      });
+    }
     
     setIsRendering(false);
   };
@@ -194,12 +260,6 @@ const SignaturePreview: React.FC<SignaturePreviewProps> = ({ data }) => {
         </div>
       </div>
       <div className="flex flex-wrap gap-4 justify-center">
-        <button
-          onClick={drawSignature}
-          className="px-6 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-300 rounded-full hover:bg-slate-50 transition-all"
-        >
-          Refrescar
-        </button>
         <button
           onClick={handleDownload}
           disabled={isRendering}

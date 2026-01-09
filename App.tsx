@@ -1,12 +1,11 @@
-
 import React, { useState } from 'react';
 import { Company, SignatureData } from './types';
-import { DEFAULT_SIGNATURE, COLORS, LEGAL_DISCLAIMER_ES, LEGAL_DISCLAIMER_EN } from './constants';
+import { DEFAULT_PENTEC, DEFAULT_SAMOO, COLORS, LEGAL_DISCLAIMER_ES, LEGAL_DISCLAIMER_EN } from './constants';
 import SignatureForm from './components/SignatureForm';
 import SignaturePreview from './components/SignaturePreview';
 
 const App: React.FC = () => {
-  const [signatureData, setSignatureData] = useState<SignatureData>(DEFAULT_SIGNATURE);
+  const [signatureData, setSignatureData] = useState<SignatureData>(DEFAULT_PENTEC);
   const [showToast, setShowToast] = useState(false);
 
   const copyLegalText = () => {
@@ -19,7 +18,21 @@ const App: React.FC = () => {
   const brandColor = isSamoo ? COLORS.samoo.primary : COLORS.pentec.primary;
 
   const handleCompanyChange = (company: Company) => {
-    setSignatureData(prev => ({ ...prev, company }));
+    const newDefaults = company === Company.SAMOO ? DEFAULT_SAMOO : DEFAULT_PENTEC;
+    
+    setSignatureData(prev => {
+      // Determinar si debemos actualizar el nombre y la foto (solo si son los por defecto actuales)
+      const isDefaultName = prev.name === DEFAULT_PENTEC.name || prev.name === DEFAULT_SAMOO.name;
+      const isDefaultPhoto = prev.photoUrl === DEFAULT_PENTEC.photoUrl || prev.photoUrl === DEFAULT_SAMOO.photoUrl;
+
+      return { 
+        ...prev,
+        company,
+        name: isDefaultName ? newDefaults.name : prev.name,
+        photoUrl: isDefaultPhoto ? newDefaults.photoUrl : prev.photoUrl,
+        website: newDefaults.website
+      };
+    });
   };
 
   return (
@@ -43,16 +56,17 @@ const App: React.FC = () => {
           {Object.values(Company).map((company) => {
             const isSelected = signatureData.company === company;
             const currentBrandColor = company === Company.SAMOO ? COLORS.samoo.primary : COLORS.pentec.primary;
+            
             return (
               <button
                 key={company}
                 onClick={() => handleCompanyChange(company)}
                 style={isSelected ? { 
-                  backgroundColor: currentBrandColor,
-                  color: '#white',
+                  backgroundColor: currentBrandColor, 
+                  color: 'white',
                   boxShadow: `0 4px 12px ${currentBrandColor}40`
                 } : {}}
-                className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 ${
+                className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
                   isSelected ? 'text-white scale-[1.02]' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
                 }`}
               >
@@ -63,7 +77,7 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <main className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      <div className="grid lg:grid-cols-12 gap-12 items-start">
         <div className="lg:col-span-5 space-y-8">
           <section>
             <div className="flex items-center gap-3 mb-6">
@@ -130,10 +144,9 @@ const App: React.FC = () => {
                 </div>
               </div>
             </div>
-
           </section>
         </div>
-      </main>
+      </div>
 
       {/* Toast Notificación */}
       <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 transition-all duration-500 transform ${showToast ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0 pointer-events-none'}`}>
@@ -146,7 +159,6 @@ const App: React.FC = () => {
           <span className="text-sm font-bold tracking-tight">Texto legal copiado al portapapeles</span>
         </div>
       </div>
-
 
       <footer className="mt-20 pt-8 border-t border-slate-200 text-center text-slate-500 text-sm">
         <p>&copy; {new Date().getFullYear()} {signatureData.company}. Todos los derechos reservados.</p>
