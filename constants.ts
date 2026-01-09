@@ -6,8 +6,8 @@ export const CANVAS_HEIGHT = 300;
 
 // URLs externas proporcionadas por el usuario
 export const BACKGROUNDS = {
-  pentec: 'https://i.ibb.co/vxP6mLKv/BG-pentec.png', 
-  samoo: 'https://i.ibb.co/cScYJdV2/BG-samoo.png'
+  pentec: '/BG_pentec.png', 
+  samoo: '/BG_samoo.png'
 };
 
 export const COLORS = {
@@ -27,7 +27,7 @@ export const COLORS = {
 
 export const DEFAULT_SIGNATURE: SignatureData = {
   company: Company.PENTEC,
-  photoUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+  photoUrl: '/avatar.png',
   name: 'Jane Doe',
   jobTitle: 'Responsable de Proyectos E-learning',
   phone: '+34 963 93 74 33',
