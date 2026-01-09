@@ -60,11 +60,13 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onChange }) => {
   };
 
   return (
-    <div className="space-y-12 bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+    <div className="space-y-4 bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* 1. Foto de Perfil */}
-        <div className="space-y-4">
-          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider pt-2">Foto del Perfil</label>
+        <div className="flex flex-col space-y-4">
+          <div className="flex justify-between items-center h-6 pt-2">
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Foto del Perfil</label>
+          </div>
           <div 
             onDragOver={(e) => onDragOver(e, setIsDraggingPhoto)}
             onDragLeave={() => onDragLeave(setIsDraggingPhoto)}
@@ -74,7 +76,7 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onChange }) => {
               backgroundColor: isDraggingPhoto ? `${brandColor}05` : 'transparent',
               borderStyle: isDraggingPhoto ? 'solid' : 'dashed'
             }}
-            className="relative group overflow-hidden rounded-2xl border-2 transition-all cursor-pointer h-full"
+            className="relative group overflow-hidden rounded-2xl border-2 transition-all cursor-pointer flex-1"
           >
             <input
               type="file"
@@ -106,14 +108,14 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onChange }) => {
         </div>
 
         {/* 1.5 Fondo de la Firma */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center pt-2">
+        <div className="flex flex-col space-y-4">
+          <div className="flex justify-between items-center h-6 pt-2">
             <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Fondo (Opcional)</label>
             {data.customBackgroundUrl && (
               <button 
                 onClick={() => onChange({ ...data, customBackgroundUrl: undefined })}
                 title="Restaurar fondo por defecto"
-                className="p-1 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-all group/btn flex items-center gap-1"
+                className="p-1 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-all group/btn flex items-center"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -130,7 +132,7 @@ const SignatureForm: React.FC<SignatureFormProps> = ({ data, onChange }) => {
               backgroundColor: isDraggingBg ? `${brandColor}05` : 'transparent',
               borderStyle: isDraggingBg ? 'solid' : 'dashed'
             }}
-            className="relative group overflow-hidden rounded-2xl border-2 transition-all cursor-pointer h-full"
+            className="relative group overflow-hidden rounded-2xl border-2 transition-all cursor-pointer flex-1"
           >
             <input
               type="file"
