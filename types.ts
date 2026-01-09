@@ -13,6 +13,7 @@ export interface SignatureData {
   email: string;
   website: string;
   areaText: string;
+  customBackgroundUrl?: string;
 }
 
 export interface CanvasConfig {

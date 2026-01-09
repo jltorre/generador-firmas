@@ -32,7 +32,8 @@ const SignaturePreview: React.FC<SignaturePreviewProps> = ({ data }) => {
     ctx.scale(dpr, dpr);
 
     const colors = isSamoo ? COLORS.samoo : COLORS.pentec;
-    const currentBgPath = isSamoo ? BACKGROUNDS.samoo : BACKGROUNDS.pentec;
+    const defaultBgPath = isSamoo ? BACKGROUNDS.samoo : BACKGROUNDS.pentec;
+    const currentBgPath = data.customBackgroundUrl || defaultBgPath;
 
     const bgImg = new Image();
     bgImg.crossOrigin = "anonymous";
